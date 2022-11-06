@@ -5,7 +5,7 @@ from functools import partial
 import uuid
 import pyperclip
 import base64
-import os
+import customtkinter
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.backends import default_backend
@@ -22,16 +22,17 @@ kdf = PBKDF2HMAC(
     backend=backend
 )
 
+
 encryptionKey = 0
 
 def encrypt(message: bytes, key: bytes) -> bytes:
     return Fernet(key).encrypt(message)
 
+
 def decrypt(message: bytes, token: bytes) -> bytes:
     return Fernet(token).decrypt(message)
 
 
-#database code
 with sqlite3.connect('password_vault.db') as db:
     cursor = db.cursor()
 
@@ -50,16 +51,17 @@ username TEXT NOT NULL,
 password TEXT NOT NULL);
 """)
 
-#Create PopUp
+
 def popUp(text):
     answer = simpledialog.askstring("input string", text)
-
     return answer
 
-#Initiate window
-window = Tk()
-window.update()
 
+customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
+customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
+
+window = customtkinter.CTk()
+window.update()
 window.title("Password Vault")
 
 def hashPassword(input):
@@ -68,24 +70,25 @@ def hashPassword(input):
 
     return hash1
 
+
 def firstTimeScreen():
     for widget in window.winfo_children():
         widget.destroy()
 
-    window.geometry('250x125')
-    lbl = Label(window, text="Choose a Master Password")
-    lbl.config(anchor=CENTER)
+    window.geometry('250x150')
+    lbl = customtkinter.CTkLabel(window, text="Choose a Master Password")
+    lbl.configure(anchor=CENTER)
     lbl.pack()
 
-    txt = Entry(window, width=20, show="*")
+    txt = customtkinter.CTkEntry(window, width=180, show="*")
     txt.pack()
     txt.focus()
 
-    lbl1 = Label(window, text="Re-enter password")
-    lbl1.config(anchor=CENTER)
+    lbl1 = customtkinter.CTkLabel(window, text="Re-enter password")
+    lbl1.configure(anchor=CENTER)
     lbl1.pack()
 
-    txt1 = Entry(window, width=20, show="*")
+    txt1 = customtkinter.CTkEntry(window, width=180, show="*")
     txt1.pack()
 
     def savePassword():
@@ -100,7 +103,7 @@ def firstTimeScreen():
 
             global encryptionKey
             encryptionKey = base64.urlsafe_b64encode(kdf.derive(txt.get().encode()))
-            
+
             insert_password = """INSERT INTO masterpassword(password, recoveryKey)
             VALUES(?, ?) """
             cursor.execute(insert_password, ((hashedPassword), (recoveryKey)))
@@ -108,51 +111,53 @@ def firstTimeScreen():
 
             recoveryScreen(key)
         else:
-            lbl.config(text="Passwords dont match")
+            lbl.configure(text="Passwords dont match")
 
-    btn = Button(window, text="Save", command=savePassword)
+    btn = customtkinter.CTkButton(window, text="Save", command=savePassword)
     btn.pack(pady=5)
+
 
 def recoveryScreen(key):
     for widget in window.winfo_children():
         widget.destroy()
 
-    window.geometry('250x125')
-    lbl = Label(window, text="Save this key to be able to recover account")
-    lbl.config(anchor=CENTER)
+    window.geometry('250x150')
+    lbl = customtkinter.CTkLabel(window, text="Save this key to be able to recover account")
+    lbl.configure(anchor=CENTER)
     lbl.pack()
 
-    lbl1 = Label(window, text=key)
-    lbl1.config(anchor=CENTER)
+    lbl1 = customtkinter.CTkLabel(window, text=key)
+    lbl1.configure(anchor=CENTER)
     lbl1.pack()
 
     def copyKey():
         pyperclip.copy(lbl1.cget("text"))
 
-    btn = Button(window, text="Copy Key", command=copyKey)
+    btn = customtkinter.CTkButton(window, text="Copy Key", command=copyKey)
     btn.pack(pady=5)
 
     def done():
         vaultScreen()
 
-    btn = Button(window, text="Done", command=done)
+    btn = customtkinter.CTkButton(window, text="Done", command=done)
     btn.pack(pady=5)
+
 
 def resetScreen():
     for widget in window.winfo_children():
         widget.destroy()
 
-    window.geometry('250x125')
-    lbl = Label(window, text="Enter Recovery Key")
-    lbl.config(anchor=CENTER)
+    window.geometry('250x150')
+    lbl = customtkinter.CTkLabel(window, text="Enter Recovery Key")
+    lbl.configure(anchor=CENTER)
     lbl.pack()
 
-    txt = Entry(window, width=20)
+    txt = customtkinter.CTkEntry(window, width=180)
     txt.pack()
     txt.focus()
 
-    lbl1 = Label(window)
-    lbl1.config(anchor=CENTER)
+    lbl1 = customtkinter.CTkLabel(window, text=" ")
+    lbl1.configure(anchor=CENTER)
     lbl1.pack()
 
     def getRecoveryKey():
@@ -167,27 +172,28 @@ def resetScreen():
             firstTimeScreen()
         else:
             txt.delete(0, 'end')
-            lbl1.config(text='Wrong Key')
+            lbl1.configure(text='Wrong Key')
 
-    btn = Button(window, text="Check Key", command=checkRecoveryKey)
+    btn = customtkinter.CTkButton(window, text="Check Key", command=checkRecoveryKey)
     btn.pack(pady=5)
+
 
 def loginScreen():
     for widget in window.winfo_children():
         widget.destroy()
 
-    window.geometry('250x125')
+    window.geometry('250x150')
 
-    lbl = Label(window, text="Enter  Master Password")
-    lbl.config(anchor=CENTER)
+    lbl = customtkinter.CTkLabel(window, text="Enter  Master Password")
+    lbl.configure(anchor=CENTER)
     lbl.pack()
 
-    txt = Entry(window, width=20, show="*")
+    txt = customtkinter.CTkEntry(window, width=180, show="*")
     txt.pack()
     txt.focus()
 
-    lbl1 = Label(window)
-    lbl1.config(anchor=CENTER)
+    lbl1 = customtkinter.CTkLabel(window,text="")
+    lbl1.configure(anchor=CENTER)
     lbl1.pack(side=TOP)
 
     def getMasterPassword():
@@ -205,14 +211,14 @@ def loginScreen():
         else:
             txt.delete(0, 'end')
             lbl1.config(text="Wrong Password")
-    
+
     def resetPassword():
         resetScreen()
 
-    btn = Button(window, text="Submit", command=checkPassword)
+    btn = customtkinter.CTkButton(window, text="Submit", command=checkPassword)
     btn.pack(pady=5)
 
-    btn = Button(window, text="Reset Password", command=resetPassword)
+    btn = customtkinter.CTkButton(window, text="Reset Password", command=resetPassword)
     btn.pack(pady=5)
 
 
@@ -240,19 +246,19 @@ def vaultScreen():
         db.commit()
         vaultScreen()
 
-    window.geometry('750x550')
+    window.geometry('1050x550')
     window.resizable(height=None, width=None)
-    lbl = Label(window, text="Password Vault")
+    lbl = customtkinter.CTkLabel(window, text="Password Vault")
     lbl.grid(column=1)
 
-    btn = Button(window, text="+", command=addEntry)
+    btn = customtkinter.CTkButton(window, text="Enter login info", command=addEntry)
     btn.grid(column=1, pady=10)
 
-    lbl = Label(window, text="Website")
+    lbl = customtkinter.CTkLabel(window, text="Website")
     lbl.grid(row=2, column=0, padx=80)
-    lbl = Label(window, text="Username")
+    lbl = customtkinter.CTkLabel(window, text="Username" )
     lbl.grid(row=2, column=1, padx=80)
-    lbl = Label(window, text="Password")
+    lbl = customtkinter.CTkLabel(window, text="Password")
     lbl.grid(row=2, column=2, padx=80)
 
     cursor.execute('SELECT * FROM vault')
@@ -265,21 +271,22 @@ def vaultScreen():
             if (len(array) == 0):
                 break
 
-            lbl1 = Label(window, text=(decrypt(array[i][1], encryptionKey)), font=("Helvetica", 12))
-            lbl1.grid(column=0, row=(i+3))
-            lbl2 = Label(window, text=(decrypt(array[i][2], encryptionKey)), font=("Helvetica", 12))
-            lbl2.grid(column=1, row=(i+3))
-            lbl3 = Label(window, text=(decrypt(array[i][3], encryptionKey)), font=("Helvetica", 12))
-            lbl3.grid(column=2, row=(i+3))
+            lbl1 = customtkinter.CTkLabel(window, text=(decrypt(array[i][1], encryptionKey)),)
+            lbl1.grid(column=0, row=(i + 3))
+            lbl2 = customtkinter.CTkLabel(window, text=(decrypt(array[i][2], encryptionKey)),)
+            lbl2.grid(column=1, row=(i + 3))
+            lbl3 = customtkinter.CTkLabel(window, text=(decrypt(array[i][3], encryptionKey)),)
+            lbl3.grid(column=2, row=(i + 3))
 
-            btn = Button(window, text="Delete", command=  partial(removeEntry, array[i][0]))
-            btn.grid(column=3, row=(i+3), pady=10)
+            btn = customtkinter.CTkButton(window, text="Delete", command=partial(removeEntry, array[i][0]))
+            btn.grid(column=3, row=(i + 3), pady=10)
 
-            i = i +1
+            i = i + 1
 
             cursor.execute('SELECT * FROM vault')
             if (len(cursor.fetchall()) <= i):
                 break
+
 
 cursor.execute('SELECT * FROM masterpassword')
 if (cursor.fetchall()):
