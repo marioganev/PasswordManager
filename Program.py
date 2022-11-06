@@ -62,7 +62,7 @@ customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard),
 
 window = customtkinter.CTk()
 window.update()
-window.title("Password Vault")
+window.title("Password Manager by H5N1")
 
 def hashPassword(input):
     hash1 = hashlib.sha256(input)
@@ -76,7 +76,7 @@ def firstTimeScreen():
         widget.destroy()
 
     window.geometry('250x150')
-    lbl = customtkinter.CTkLabel(window, text="Choose a Master Password")
+    lbl = customtkinter.CTkLabel(window, text="Choose a Master Password:")
     lbl.configure(anchor=CENTER)
     lbl.pack()
 
@@ -84,7 +84,7 @@ def firstTimeScreen():
     txt.pack()
     txt.focus()
 
-    lbl1 = customtkinter.CTkLabel(window, text="Re-enter password")
+    lbl1 = customtkinter.CTkLabel(window, text="Re-enter password:")
     lbl1.configure(anchor=CENTER)
     lbl1.pack()
 
@@ -111,7 +111,7 @@ def firstTimeScreen():
 
             recoveryScreen(key)
         else:
-            lbl.configure(text="Passwords dont match")
+            lbl.configure(text="Passwords don't match")
 
     btn = customtkinter.CTkButton(window, text="Save", command=savePassword)
     btn.pack(pady=5)
@@ -148,7 +148,7 @@ def resetScreen():
         widget.destroy()
 
     window.geometry('250x150')
-    lbl = customtkinter.CTkLabel(window, text="Enter Recovery Key")
+    lbl = customtkinter.CTkLabel(window, text="Enter Recovery Key:")
     lbl.configure(anchor=CENTER)
     lbl.pack()
 
@@ -184,7 +184,7 @@ def loginScreen():
 
     window.geometry('250x150')
 
-    lbl = customtkinter.CTkLabel(window, text="Enter  Master Password")
+    lbl = customtkinter.CTkLabel(window, text="Enter your Master Password:")
     lbl.configure(anchor=CENTER)
     lbl.pack()
 
